@@ -1,0 +1,44 @@
+{
+  "name": "retention-backend",
+  "version": "1.0.0",
+  "description": "Wholesale Customer Retention & Payment Follow-up Express Backend",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "migrate": "node src/scripts/migrate.js",
+    "seed": "node src/scripts/seed.js",
+    "test": "jest --runInBand --detectOpenHandles --forceExit"
+  },
+  "keywords": [
+    "wholesale",
+    "retention",
+    "payment",
+    "whatsapp",
+    "follow-up",
+    "stage-engine"
+  ],
+  "author": "Engineering Candidate",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "pg-mem": "^2.8.1",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "verbose": true
+  }
+}
