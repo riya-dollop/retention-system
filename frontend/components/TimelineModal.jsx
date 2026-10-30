@@ -98,3 +98,4 @@ export default function TimelineModal({ selectedCase, isOpen, onClose, onAddNote
     </div>
   );
 }
+

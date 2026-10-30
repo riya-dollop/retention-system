@@ -105,3 +105,4 @@ export default function NotificationDrawer({ notifications, isOpen, onClose, onM
     </div>
   );
 }
+

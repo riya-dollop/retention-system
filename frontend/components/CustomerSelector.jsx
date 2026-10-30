@@ -109,3 +109,4 @@ export default function CustomerSelector({ customers, selectedCustomer, onSelect
     </div>
   );
 }
+

@@ -179,3 +179,4 @@ export default function CaseTable({ cases, onSelectCaseTimeline, onUpdateCaseSta
     </div>
   );
 }
+

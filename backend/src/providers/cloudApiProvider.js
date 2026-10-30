@@ -55,3 +55,4 @@ class CloudApiProvider extends MessageProvider {
 }
 
 module.exports = CloudApiProvider;
+

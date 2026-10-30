@@ -29,3 +29,4 @@ class MessageProvider {
 }
 
 module.exports = MessageProvider;
+

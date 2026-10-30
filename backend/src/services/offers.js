@@ -3,7 +3,9 @@ const path = require('path');
 const { pool } = require('../db/pool');
 const mockProvider = require('../providers/mockProvider');
 
-const offersConfigPath = path.join(__dirname, '../config/offers.json');
+const offersConfigPath = fs.existsSync(path.join(__dirname, '../../config/offers.json'))
+  ? path.join(__dirname, '../../config/offers.json')
+  : path.join(__dirname, '../config/offers.json');
 const offersConfig = JSON.parse(fs.readFileSync(offersConfigPath, 'utf8'));
 
 /**

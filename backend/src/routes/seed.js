@@ -1,6 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { seedDatabase } = require('../scripts/seed');
+const fs = require('fs');
+const path = require('path');
+
+const seedScriptPath = fs.existsSync(path.join(__dirname, '../../scripts/seed.js'))
+  ? path.join(__dirname, '../../scripts/seed.js')
+  : path.join(__dirname, '../scripts/seed.js');
+
+const { seedDatabase } = require(seedScriptPath);
 
 /**
  * @openapi

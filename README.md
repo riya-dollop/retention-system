@@ -185,3 +185,4 @@ All 11 tests pass:
 2. **Deterministic Seed State**: The seed script seeds 10 customers, 20 invoices across all due categories (not yet due, due today, 3d, 7d, 15d overdue, partially paid, fully paid), and 30 past orders.
 3. **Database Fallback for Testing**: While production connects to PostgreSQL via `docker compose`, `db/pool.js` includes an automatic fallback to `pg-mem` when a live PostgreSQL container is not running, ensuring reviewers can run `npm test` smoothly in any environment.
 4. **Meta WhatsApp Cloud API Adapter**: An empty `CloudApiProvider` stub is included in `src/providers/cloudApiProvider.js` with comprehensive step-by-step instructions on plugging in live Meta Graph API webhooks and credentials.
+

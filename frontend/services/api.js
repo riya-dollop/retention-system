@@ -61,3 +61,4 @@ export const api = {
   getOffers: () => fetchJson('/offers'),
   getReorderRecommendations: () => fetchJson('/reorder/recommendations'),
 };
+

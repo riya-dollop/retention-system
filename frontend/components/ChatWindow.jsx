@@ -175,3 +175,4 @@ export default function ChatWindow({ customer, messages, onOpenPaymentModal }) {
     </div>
   );
 }
+

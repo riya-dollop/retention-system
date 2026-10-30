@@ -4,8 +4,10 @@ const { pool } = require('../db/pool');
 const mockProvider = require('../providers/mockProvider');
 const caseService = require('./cases');
 
-// Load stages config
-const stagesConfigPath = path.join(__dirname, '../config/stages.json');
+// Load stages config (checks backend/config/stages.json first per layout specification)
+const stagesConfigPath = fs.existsSync(path.join(__dirname, '../../config/stages.json'))
+  ? path.join(__dirname, '../../config/stages.json')
+  : path.join(__dirname, '../config/stages.json');
 const stagesConfig = JSON.parse(fs.readFileSync(stagesConfigPath, 'utf8'));
 
 /**

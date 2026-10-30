@@ -95,3 +95,4 @@ export default function QuickReplyBar({ customer, onSendReply, loading }) {
     </div>
   );
 }
+

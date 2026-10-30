@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../src/server');
 const { pool } = require('../src/db/pool');
-const { seedDatabase } = require('../src/scripts/seed');
+const { seedDatabase } = require('../scripts/seed');
 
 describe('Wholesale Retention System - The Six Required Scenarios', () => {
   beforeEach(async () => {

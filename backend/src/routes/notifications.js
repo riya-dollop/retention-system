@@ -70,3 +70,4 @@ router.patch('/:id/read', async (req, res, next) => {
 });
 
 module.exports = router;
+

@@ -164,3 +164,4 @@ export default function RecordPaymentModal({ customer, isOpen, onClose, onSubmit
     </div>
   );
 }
+
