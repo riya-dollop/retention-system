@@ -1,0 +1,34 @@
+{
+  "stages": [
+    {
+      "name": "pre_due",
+      "dayOffset": -2,
+      "description": "Friendly pre-due reminder sent 2 days before the invoice due date",
+      "template": "Hi {name}, friendly reminder that invoice {invoice_no} of Rs {balance} is due on {due_date}. Early payment helps keep your credit terms active!"
+    },
+    {
+      "name": "due_day",
+      "dayOffset": 0,
+      "description": "Due-day reminder sent on the exact due date",
+      "template": "Hi {name}, invoice {invoice_no} of Rs {balance} is due today ({due_date}). Please process payment via UPI / Bank transfer."
+    },
+    {
+      "name": "soft_followup",
+      "dayOffset": 3,
+      "description": "Polite nudge sent 3 days overdue",
+      "template": "Hi {name}, invoice {invoice_no} of Rs {balance} was due on {due_date}. Please pay today to avoid credit hold."
+    },
+    {
+      "name": "firm_followup",
+      "dayOffset": 7,
+      "description": "Firm follow-up sent 7 days overdue, creates a salesperson case",
+      "template": "URGENT: Hi {name}, invoice {invoice_no} of Rs {balance} is now 7 days overdue ({due_date}). Our sales manager {salesperson} has been assigned to assist you. Please reply PAID or PROMISE <date>."
+    },
+    {
+      "name": "final_notice",
+      "dayOffset": 15,
+      "description": "Final warning sent 15 days overdue, escalates case to manager",
+      "template": "FINAL NOTICE: Hi {name}, invoice {invoice_no} of Rs {balance} is 15 days overdue ({due_date}). Credit services are suspended and your case is escalated to executive management."
+    }
+  ]
+}

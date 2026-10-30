@@ -1,0 +1,21 @@
+{
+  "offers": [
+    {
+      "code": "EARLYPAY2",
+      "name": "Early-Payment Discount",
+      "discountPercent": 2,
+      "validDays": 3,
+      "description": "2% instant rebate on invoice amount if paid within 3 days of invoice issuance",
+      "template": "Exclusive Offer for {name}: Pay invoice {invoice_no} within 3 days to claim an instant 2% cash discount (Save Rs {savings})! Reply PAID to confirm."
+    },
+    {
+      "code": "WINBACK10",
+      "name": "Win-Back Retention Coupon",
+      "discountPercent": 10,
+      "validDays": 7,
+      "minDaysWithoutOrder": 45,
+      "description": "10% off your next wholesale restock order, valid for 7 days",
+      "template": "We miss you, {name}! It has been over 45 days since your last order. Here is a 10% discount coupon code: WINBACK10 (valid for 7 days). Reply YES to restock your favorite items!"
+    }
+  ]
+}
