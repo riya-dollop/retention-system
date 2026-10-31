@@ -162,6 +162,7 @@ export default function MockWhatsAppPage() {
             customer={selectedCustomer}
             messages={messages}
             onOpenPaymentModal={() => setIsPaymentModalOpen(true)}
+            onQuickAction={handleSendReply}
           />
 
           <QuickReplyBar
