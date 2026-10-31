@@ -82,12 +82,25 @@ app.use((err, req, res, next) => {
   });
 });
 
+const { startScheduler, stopScheduler } = require('./services/scheduler');
+
 if (require.main === module) {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`=======================================================`);
     console.log(`Backend API Server running at: http://localhost:${PORT}`);
     console.log(`Swagger Interactive Docs:      http://localhost:${PORT}/api-docs`);
     console.log(`=======================================================`);
+    startScheduler();
+  });
+
+  process.on('SIGINT', () => {
+    stopScheduler();
+    server.close(() => process.exit(0));
+  });
+
+  process.on('SIGTERM', () => {
+    stopScheduler();
+    server.close(() => process.exit(0));
   });
 }
 

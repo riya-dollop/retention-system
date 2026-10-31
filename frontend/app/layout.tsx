@@ -1,18 +1,21 @@
 import './globals.css';
 import Link from 'next/link';
 import { MessageSquare, ShieldCheck, FileCode2, Sparkles, Activity } from 'lucide-react';
+import ToastProvider from '../components/ToastProvider';
 
 export const metadata = {
-  title: 'KrediFlow | Wholesale Retention & Collections Engine',
+  title: 'Wholesale Retention | Wholesale Retention & Collections Engine',
   description: 'Stage-based automated collections, retention offers, churn prevention and staff escalation system.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col bg-slate-100 text-slate-900 antialiased selection:bg-emerald-500 selection:text-white">
+    <html lang="en" className="h-full overflow-hidden">
+      <body className="h-screen w-screen flex flex-col bg-slate-100 text-slate-900 antialiased overflow-hidden selection:bg-emerald-500 selection:text-white">
+        <ToastProvider />
+
         {/* Universal Top Header */}
-        <header className="bg-slate-950 text-white border-b border-slate-800/80 px-4 md:px-6 py-2.5 sticky top-0 z-40 shadow-md backdrop-blur-md">
+        <header className="bg-slate-950 text-white border-b border-slate-800/80 px-4 md:px-6 py-2.5 flex-shrink-0 z-40 shadow-md backdrop-blur-md">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
             {/* Branding */}
             <div className="flex items-center space-x-3">
@@ -22,11 +25,9 @@ export default function RootLayout({ children }) {
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="font-extrabold text-sm tracking-tight text-white flex items-center gap-1.5">
-                    <span className="bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">KrediFlow</span>
+                    <span className="bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">Wholesale Retention</span>
                   </h1>
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono font-medium flex items-center gap-1">
-                    <Activity className="w-2.5 h-2.5 text-emerald-400 animate-pulse" /> Live Engine
-                  </span>
+            
                 </div>
                 <p className="text-[11px] text-slate-400 font-medium hidden sm:block">Wholesale Collections & Retention System</p>
               </div>
@@ -65,7 +66,7 @@ export default function RootLayout({ children }) {
         </header>
 
         {/* Main Application Body */}
-        <main className="flex-1 flex flex-col min-h-0">{children}</main>
+        <main className="flex-1 flex flex-col min-h-0 overflow-hidden">{children}</main>
       </body>
     </html>
   );

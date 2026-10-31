@@ -1,12 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Bell, ShieldAlert, Check, X, Ban, CreditCard, MessageSquare, CheckCheck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Bell, ShieldAlert, Check, X, Ban, CreditCard, MessageSquare } from 'lucide-react';
 
 export default function NotificationDrawer({ notifications, isOpen, onClose, onMarkRead }) {
   const [filterRole, setFilterRole] = useState('all');
+  const [rendered, setRendered] = useState(isOpen);
+  const [active, setActive] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      setRendered(true);
+      const timer = setTimeout(() => setActive(true), 20);
+      return () => clearTimeout(timer);
+    } else {
+      setActive(false);
+      const timer = setTimeout(() => setRendered(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  if (!rendered) return null;
 
   const filtered = notifications.filter((n) => {
     if (filterRole === 'all') return true;
@@ -26,8 +40,18 @@ export default function NotificationDrawer({ notifications, isOpen, onClose, onM
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs animate-fadeIn">
-      <div className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col border-l border-slate-200 animate-slideIn">
+    <div
+      onClick={onClose}
+      className={`fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs transition-opacity duration-300 ease-in-out ${
+        active ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`w-full max-w-md bg-white h-full shadow-2xl flex flex-col border-l border-slate-200 transform transition-transform duration-300 ease-in-out ${
+          active ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
         {/* Drawer Header */}
         <div className="p-4 bg-slate-950 text-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">

@@ -26,34 +26,7 @@ export default function CustomerSelector({ customers, selectedCustomer, onSelect
     return true;
   });
 
-  const getTierBadge = (tier) => {
-    switch (tier?.toLowerCase()) {
-      case 'gold':
-        return (
-          <span className="px-1.5 py-0.2 text-[9px] rounded font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
-            Gold
-          </span>
-        );
-      case 'silver':
-        return (
-          <span className="px-1.5 py-0.2 text-[9px] rounded font-bold uppercase tracking-wider bg-slate-200 text-slate-700 border border-slate-300">
-            Silver
-          </span>
-        );
-      case 'bronze':
-        return (
-          <span className="px-1.5 py-0.2 text-[9px] rounded font-bold uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-300">
-            Bronze
-          </span>
-        );
-      default:
-        return (
-          <span className="px-1.5 py-0.2 text-[9px] rounded font-bold uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-200">
-            {tier}
-          </span>
-        );
-    }
-  };
+ 
 
   const overdueCount = customers.filter((c) => Number(c.total_outstanding || 0) > 0 && !c.opt_out).length;
   const casesCount = customers.filter((c) => (c.active_cases_count || 0) > 0).length;
@@ -165,7 +138,6 @@ export default function CustomerSelector({ customers, selectedCustomer, onSelect
                       <span className="font-bold text-xs text-slate-900 truncate">
                         {customer.name}
                       </span>
-                      {getTierBadge(customer.tier)}
                       {customer.opt_out && (
                         <span
                           className="flex items-center gap-0.5 px-1 py-0.2 text-[9px] bg-red-100 text-red-700 rounded font-bold"
@@ -202,7 +174,7 @@ export default function CustomerSelector({ customers, selectedCustomer, onSelect
 
                       {customer.promise_date && (
                         <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded font-medium">
-                          Promised {customer.promise_date}
+                          Promised {String(customer.promise_date).substring(0, 10)}
                         </span>
                       )}
                     </div>

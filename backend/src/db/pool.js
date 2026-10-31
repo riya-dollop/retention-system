@@ -9,9 +9,9 @@ let realPool = new Pool({
   connectionString,
   max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 1000,
 });
-
+  
 let memDb = null;
 let memPool = null;
 let useMemoryFallback = false;

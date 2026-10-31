@@ -17,10 +17,17 @@ import {
   Copy,
   CheckCircle2,
   Phone,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft
 } from 'lucide-react';
 
-export default function ChatWindow({ customer, messages, onOpenPaymentModal, onQuickAction }) {
+export default function ChatWindow({ customer, messages, onOpenPaymentModal, onQuickAction, onBackToList }: {
+  customer: any;
+  messages: any[];
+  onOpenPaymentModal: () => void;
+  onQuickAction?: (actionText: string) => void;
+  onBackToList?: () => void;
+}) {
   const scrollRef = useRef(null);
   const [showDossier, setShowDossier] = useState(false);
   const [copiedCode, setCopiedCode] = useState(null);
@@ -164,27 +171,42 @@ export default function ChatWindow({ customer, messages, onOpenPaymentModal, onQ
   return (
     <div className="flex-1 flex flex-col h-full bg-[#EFEAE2] whatsapp-chat-bg relative overflow-hidden">
       {/* WhatsApp Header Bar */}
-      <div className="bg-[#008069] text-white px-4 py-2.5 flex items-center justify-between shadow-md z-10">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-emerald-800 flex items-center justify-center font-bold text-sm text-emerald-100 border-2 border-emerald-400 shadow-xs">
-            {customer.name.substring(0, 2).toUpperCase()}
+      <div className="bg-[#008069] text-white px-3 md:px-4 py-2.5 flex items-center justify-between shadow-md z-10">
+        <div className="flex items-center space-x-2 md:space-x-3">
+          {/* Mobile Back Button */}
+          {onBackToList && (
+            <button
+              onClick={onBackToList}
+              className="md:hidden p-1.5 -ml-1 text-white hover:bg-emerald-700/60 rounded-full transition active:scale-95"
+              title="Back to retailers directory"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
+
+          <div className="relative">
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-emerald-800 flex items-center justify-center font-bold text-xs md:text-sm text-emerald-100 border-2 border-emerald-400 shadow-xs">
+              {customer.name.substring(0, 2).toUpperCase()}
+            </div>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-300 border-2 border-[#008069] absolute bottom-0 right-0"></span>
           </div>
+
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="font-bold text-sm leading-tight text-white">{customer.name}</h2>
-              <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-mono text-emerald-100 font-medium">
-                {customer.credit_terms}D Credit
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <h2 className="font-bold text-xs md:text-sm leading-tight text-white line-clamp-1">{customer.name}</h2>
+              <span className="text-[9px] md:text-[10px] bg-white/20 px-1.5 py-0.2 rounded-full font-mono text-emerald-100 font-medium">
+                {customer.credit_terms}D
               </span>
             </div>
-            <p className="text-[11px] text-emerald-100/90 flex items-center gap-1.5 mt-0.5">
+            <p className="text-[10px] md:text-[11px] text-emerald-100/90 flex items-center gap-1.5 mt-0.5">
               <span>{customer.phone}</span>
-              <span>•</span>
-              <span>Rep: {customer.salesperson}</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="hidden sm:inline">Rep: {customer.salesperson}</span>
               {customer.promise_date && (
                 <>
                   <span>•</span>
-                  <span className="text-amber-200 font-semibold bg-amber-900/40 px-1.5 rounded">
-                    Promised: {customer.promise_date}
+                  <span className="text-amber-200 font-semibold bg-amber-900/50 px-1.5 py-0.2 rounded text-[10px]">
+                    Promised: {String(customer.promise_date).substring(0, 10)}
                   </span>
                 </>
               )}
@@ -193,7 +215,7 @@ export default function ChatWindow({ customer, messages, onOpenPaymentModal, onQ
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5 sm:space-x-2">
           {/* Customer Dossier Toggle */}
           <button
             onClick={() => setShowDossier(!showDossier)}
@@ -209,10 +231,11 @@ export default function ChatWindow({ customer, messages, onOpenPaymentModal, onQ
           {/* Record Payment Button */}
           <button
             onClick={onOpenPaymentModal}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold shadow-md transition active:scale-95"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 px-2.5 md:px-3 py-1.5 rounded-lg text-xs font-bold shadow-md transition active:scale-95"
           >
             <CreditCard className="w-3.5 h-3.5 text-slate-950" />
-            <span>Record Payment</span>
+            <span className="hidden xs:inline">Record Payment</span>
+            <span className="xs:hidden">Pay</span>
           </button>
         </div>
       </div>
@@ -220,14 +243,43 @@ export default function ChatWindow({ customer, messages, onOpenPaymentModal, onQ
       {/* Main Chat Workspace + Dossier Drawer */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* Message Chat Feed */}
-        <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-3.5">
+        <div ref={scrollRef} className="flex-1 p-3 md:p-4 overflow-y-auto space-y-3.5">
           {messages.length === 0 ? (
-            <div className="text-center my-14">
-              <div className="inline-block bg-white/90 backdrop-blur-md px-5 py-3 rounded-2xl shadow-sm text-xs text-slate-600 border border-slate-200/80 max-w-sm">
-                <p className="font-semibold text-slate-800 mb-1">No WhatsApp Messages Yet</p>
-                <p className="text-slate-500">
-                  Advance the simulated clock above to trigger follow-up stages, or use the quick reply buttons below to simulate customer responses.
+            <div className="text-center my-10 md:my-14 max-w-md mx-auto px-4">
+              <div className="bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-sm text-xs text-slate-600 border border-slate-200/90 text-left">
+                <div className="flex items-center gap-2 mb-2 text-slate-800 font-bold text-sm">
+                  <span className="text-base">💬</span>
+                  <span>Wholesale WhatsApp Simulation Active</span>
+                </div>
+                <p className="text-slate-500 leading-relaxed mb-3">
+                  Invoices are evaluated against configured stages (Day -2 pre-due, 0 due, +3 soft, +7 firm, +15 final notice). Use the top clock bar to fast-forward days, or test customer replies instantly:
                 </p>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <button
+                    onClick={() => onQuickAction && onQuickAction('Paid')}
+                    className="px-2.5 py-1 text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg hover:bg-emerald-100 transition active:scale-95"
+                  >
+                    Simulate: Paid
+                  </button>
+                  <button
+                    onClick={() => onQuickAction && onQuickAction('Promise 2026-11-05')}
+                    className="px-2.5 py-1 text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-300 rounded-lg hover:bg-blue-100 transition active:scale-95"
+                  >
+                    Simulate: Promise
+                  </button>
+                  <button
+                    onClick={() => onQuickAction && onQuickAction('Dispute')}
+                    className="px-2.5 py-1 text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300 rounded-lg hover:bg-amber-100 transition active:scale-95"
+                  >
+                    Simulate: Dispute
+                  </button>
+                  <button
+                    onClick={() => onQuickAction && onQuickAction('Stop')}
+                    className="px-2.5 py-1 text-[11px] font-bold bg-rose-50 text-rose-800 border border-rose-300 rounded-lg hover:bg-rose-100 transition active:scale-95"
+                  >
+                    Simulate: Stop
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
@@ -274,18 +326,25 @@ export default function ChatWindow({ customer, messages, onOpenPaymentModal, onQ
           )}
         </div>
 
-        {/* Slide-out Customer Dossier Drawer */}
+        {/* Slide-out Customer Dossier Drawer with click-outside dismiss */}
         {showDossier && (
-          <div className="w-80 bg-white border-l border-slate-200 shadow-xl flex flex-col h-full animate-slideIn z-20">
-            <div className="p-3.5 bg-slate-900 text-white flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-emerald-400" />
-                <h3 className="font-bold text-xs">Customer Dossier</h3>
+          <div
+            onClick={() => setShowDossier(false)}
+            className="absolute inset-0 z-20 bg-black/25 backdrop-blur-2xs flex justify-end animate-fadeIn"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-80 max-w-[90vw] bg-white border-l border-slate-200 shadow-xl flex flex-col h-full animate-slideIn"
+            >
+              <div className="p-3.5 bg-slate-950 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-emerald-400" />
+                  <h3 className="font-bold text-xs">Customer Dossier</h3>
+                </div>
+                <button onClick={() => setShowDossier(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button onClick={() => setShowDossier(false)} className="text-slate-400 hover:text-white">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
             <div className="p-4 overflow-y-auto space-y-4 text-xs">
               {/* Account summary */}
@@ -338,6 +397,7 @@ export default function ChatWindow({ customer, messages, onOpenPaymentModal, onQ
               </div>
             </div>
           </div>
+        </div>
         )}
       </div>
     </div>

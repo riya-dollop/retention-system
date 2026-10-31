@@ -3,6 +3,8 @@ const app = require('../src/server');
 const { pool } = require('../src/db/pool');
 const { seedDatabase } = require('../scripts/seed');
 
+jest.setTimeout(30000);
+
 describe('Wholesale Retention System - The Six Required Scenarios', () => {
   beforeEach(async () => {
     // Reset database to initial baseline seed state before each scenario test

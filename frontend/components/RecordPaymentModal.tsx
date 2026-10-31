@@ -1,14 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CreditCard, CheckCircle2, Sparkles, Percent } from 'lucide-react';
+import toast from 'react-hot-toast';
+import Dropdown, { DropdownOption } from './Dropdown';
 
 export default function RecordPaymentModal({ customer, isOpen, onClose, onSubmitPayment, loading }) {
   const [selectedInvoiceNo, setSelectedInvoiceNo] = useState('');
   const [amount, setAmount] = useState<string | number>('');
   const [message, setMessage] = useState<string | null>(null);
+  const [rendered, setRendered] = useState(isOpen);
+  const [active, setActive] = useState(false);
 
-  if (!isOpen || !customer) return null;
+  useEffect(() => {
+    if (isOpen) {
+      setRendered(true);
+      const timer = setTimeout(() => setActive(true), 20);
+      return () => clearTimeout(timer);
+    } else {
+      setActive(false);
+      const timer = setTimeout(() => setRendered(false), 250);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  if (!rendered || !customer) return null;
 
   const unpaidInvoices = (customer.invoices || []).filter((inv) => {
     const balance = Number(inv.amount) - Number(inv.paid_amount);
@@ -35,21 +51,39 @@ export default function RecordPaymentModal({ customer, isOpen, onClose, onSubmit
         invoice_no: selectedInvoiceNo,
         amount: numAmount,
       });
-      setMessage(`Payment recorded! Remaining balance: ₹${res.remainingBalance.toFixed(2)}`);
+      toast.success(`Payment recorded! Remaining balance: ₹${res.remainingBalance.toFixed(2)}`);
       setAmount('');
-      setTimeout(() => {
-        setMessage(null);
-        onClose();
-      }, 1500);
-    } catch (err) {
-      alert(err.message);
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to submit payment');
     }
   };
 
+  const invoiceDropdownOptions: DropdownOption[] = unpaidInvoices.map((inv) => {
+    const bal = Number(inv.amount) - Number(inv.paid_amount);
+    return {
+      value: inv.invoice_no,
+      label: inv.invoice_no,
+      badge: `₹${bal.toFixed(2)} balance`,
+      badgeColor: 'bg-rose-100 text-rose-800',
+      sublabel: `Due: ${String(inv.due_date).substring(0, 10)} (Total: ₹${Number(inv.amount).toFixed(2)})`,
+    };
+  });
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fadeIn">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
-        <div className="bg-slate-950 text-white px-5 py-4 flex items-center justify-between">
+    <div
+      onClick={onClose}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-opacity duration-250 ease-in-out ${
+        active ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`bg-white rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 flex flex-col relative transform transition-all duration-250 ease-out ${
+          active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-3'
+        }`}
+      >
+        <div className="bg-slate-950 text-white px-5 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg">
               <CreditCard className="w-4 h-4" />
@@ -81,28 +115,19 @@ export default function RecordPaymentModal({ customer, isOpen, onClose, onSubmit
                 All invoices for this customer are fully paid!
               </p>
             ) : (
-              <select
+              <Dropdown
+                options={invoiceDropdownOptions}
                 value={selectedInvoiceNo}
-                onChange={(e) => {
-                  setSelectedInvoiceNo(e.target.value);
-                  const inv = unpaidInvoices.find((i) => i.invoice_no === e.target.value);
+                onChange={(val) => {
+                  setSelectedInvoiceNo(val);
+                  const inv = unpaidInvoices.find((i) => i.invoice_no === val);
                   if (inv) {
                     setAmount(Number(inv.amount) - Number(inv.paid_amount));
                   }
                 }}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 bg-white font-medium"
-                required
-              >
-                <option value="">-- Choose an overdue or open invoice --</option>
-                {unpaidInvoices.map((inv) => {
-                  const bal = Number(inv.amount) - Number(inv.paid_amount);
-                  return (
-                    <option key={inv.id} value={inv.invoice_no}>
-                      {inv.invoice_no} — ₹{bal.toFixed(2)} balance (Due: {String(inv.due_date).substring(0, 10)})
-                    </option>
-                  );
-                })}
-              </select>
+                placeholder="-- Choose an overdue or open invoice --"
+                searchable={invoiceDropdownOptions.length > 3}
+              />
             )}
           </div>
 

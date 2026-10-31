@@ -1,12 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, History, PlusCircle, ShieldAlert, CheckCircle2, UserCheck, MessageSquare, Send } from 'lucide-react';
 
 export default function TimelineModal({ selectedCase, isOpen, onClose, onAddNote }) {
   const [newNote, setNewNote] = useState('');
+  const [rendered, setRendered] = useState(isOpen);
+  const [active, setActive] = useState(false);
 
-  if (!isOpen || !selectedCase) return null;
+  useEffect(() => {
+    if (isOpen) {
+      setRendered(true);
+      const timer = setTimeout(() => setActive(true), 20);
+      return () => clearTimeout(timer);
+    } else {
+      setActive(false);
+      const timer = setTimeout(() => setRendered(false), 250);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  if (!rendered || !selectedCase) return null;
 
   let timeline = selectedCase.timeline || [];
   if (typeof timeline === 'string') {
@@ -54,8 +68,18 @@ export default function TimelineModal({ selectedCase, isOpen, onClose, onAddNote
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fadeIn">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
+    <div
+      onClick={onClose}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-opacity duration-250 ease-in-out ${
+        active ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 transform transition-all duration-250 ease-out ${
+          active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-3'
+        }`}
+      >
         {/* Header */}
         <div className="bg-slate-950 text-white px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">

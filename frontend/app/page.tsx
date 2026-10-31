@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import toast from 'react-hot-toast';
 import { api } from '../services/api';
 import ClockController from '../components/ClockController';
 import CustomerSelector from '../components/CustomerSelector';
@@ -15,6 +16,7 @@ export default function MockWhatsAppPage() {
   const [messages, setMessages] = useState([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
 
   // Load clock date
   const loadClock = useCallback(async () => {
@@ -33,20 +35,18 @@ export default function MockWhatsAppPage() {
       setCustomers(data);
 
       if (data.length > 0) {
-        if (selectId) {
-          const match = data.find((c) => c.id === selectId);
-          if (match) setSelectedCustomer(match);
-        } else if (!selectedCustomer) {
-          setSelectedCustomer(data[0]);
-        } else {
-          const currentMatch = data.find((c) => c.id === selectedCustomer.id);
-          if (currentMatch) setSelectedCustomer(currentMatch);
-        }
+        setSelectedCustomer((prev) => {
+          if (selectId) {
+            return data.find((c) => c.id === selectId) || prev || data[0];
+          }
+          if (!prev) return data[0];
+          return data.find((c) => c.id === prev.id) || prev || data[0];
+        });
       }
     } catch (err) {
       console.error('Failed to load customers:', err);
     }
-  }, [selectedCustomer]);
+  }, []);
 
   // Load messages for currently selected customer
   const loadMessages = useCallback(async (customerId) => {
@@ -80,9 +80,10 @@ export default function MockWhatsAppPage() {
       if (selectedCustomer?.id) {
         await loadMessages(selectedCustomer.id);
       }
+      toast.success(`Fast-forwarded ${days} day(s) → ${res.currentDate}`);
       return res;
-    } catch (err) {
-      alert(`Advance clock error: ${err.message}`);
+    } catch (err: any) {
+      toast.error(`Advance clock error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -99,9 +100,9 @@ export default function MockWhatsAppPage() {
       if (customers[0]?.id) {
         await loadMessages(customers[0].id);
       }
-      alert('Database successfully reset to initial seed data!');
-    } catch (err) {
-      alert(`Reset error: ${err.message}`);
+      toast.success('Database successfully reset to initial seed data!');
+    } catch (err: any) {
+      toast.error(`Reset error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -120,8 +121,9 @@ export default function MockWhatsAppPage() {
       // Reload chat feed and customer state immediately
       await loadMessages(selectedCustomer.id);
       await loadCustomers(selectedCustomer.id);
-    } catch (err) {
-      alert(`Webhook error: ${err.message}`);
+      toast.success(`Simulated reply sent: "${text.substring(0, 24)}${text.length > 24 ? '...' : ''}"`);
+    } catch (err: any) {
+      toast.error(`Webhook error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -129,47 +131,65 @@ export default function MockWhatsAppPage() {
 
   // Handle recording payment
   const handleRecordPayment = async (paymentData) => {
-    const res = await api.recordPayment(paymentData);
-    await loadCustomers(selectedCustomer?.id);
-    if (selectedCustomer?.id) {
-      await loadMessages(selectedCustomer.id);
+    try {
+      const res = await api.recordPayment(paymentData);
+      await loadCustomers(selectedCustomer?.id);
+      if (selectedCustomer?.id) {
+        await loadMessages(selectedCustomer.id);
+      }
+      toast.success(`Payment of ₹${paymentData.amount} recorded!`);
+      return res;
+    } catch (err: any) {
+      toast.error(`Payment failed: ${err.message}`);
+      throw err;
     }
-    return res;
   };
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-57px)] overflow-hidden">
+    <div className="flex-1 flex flex-col h-[calc(100vh-57px)] min-h-0 overflow-hidden">
       {/* Top Simulated Fake Clock Fast-Forward Bar */}
-      <ClockController
-        currentDate={currentDate}
-        onAdvance={handleAdvanceClock}
-        onReset={handleReset}
-        loading={loading}
-      />
+      <div className="flex-shrink-0">
+        <ClockController
+          currentDate={currentDate}
+          onAdvance={handleAdvanceClock}
+          onReset={handleReset}
+          loading={loading}
+        />
+      </div>
 
       {/* Main Workspace (Customer List + Chat Panel) */}
-      <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 h-full overflow-hidden">
         {/* Left Customer Directory */}
-        <CustomerSelector
-          customers={customers}
-          selectedCustomer={selectedCustomer}
-          onSelectCustomer={(cust) => setSelectedCustomer(cust)}
-        />
+        <div className={`h-full min-h-0 ${mobileView === 'list' ? 'flex flex-col w-full md:w-80 lg:w-96 flex-shrink-0' : 'hidden md:flex md:flex-col md:w-80 lg:w-96 flex-shrink-0'}`}>
+          <CustomerSelector
+            customers={customers}
+            selectedCustomer={selectedCustomer}
+            onSelectCustomer={(cust) => {
+              setSelectedCustomer(cust);
+              setMobileView('chat');
+            }}
+          />
+        </div>
 
         {/* Right WhatsApp Chat Interface */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <ChatWindow
-            customer={selectedCustomer}
-            messages={messages}
-            onOpenPaymentModal={() => setIsPaymentModalOpen(true)}
-            onQuickAction={handleSendReply}
-          />
+        <div className={`flex-1 flex flex-col h-full min-h-0 overflow-hidden ${mobileView === 'chat' ? 'flex' : 'hidden md:flex'}`}>
+          <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+            <ChatWindow
+              customer={selectedCustomer}
+              messages={messages}
+              onOpenPaymentModal={() => setIsPaymentModalOpen(true)}
+              onQuickAction={handleSendReply}
+              onBackToList={() => setMobileView('list')}
+            />
+          </div>
 
-          <QuickReplyBar
-            customer={selectedCustomer}
-            onSendReply={handleSendReply}
-            loading={loading}
-          />
+          <div className="flex-shrink-0">
+            <QuickReplyBar
+              customer={selectedCustomer}
+              onSendReply={handleSendReply}
+              loading={loading}
+            />
+          </div>
         </div>
       </div>
 

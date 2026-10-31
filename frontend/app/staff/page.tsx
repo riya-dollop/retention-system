@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import toast from 'react-hot-toast';
 import { api } from '../../services/api';
 import AgingBucketWidget from '../../components/AgingBucketWidget';
 import CaseTable from '../../components/CaseTable';
 import TimelineModal from '../../components/TimelineModal';
 import NotificationDrawer from '../../components/NotificationDrawer';
-import { Bell, ShieldAlert, AlertTriangle, CheckCircle2, Clock, RotateCcw, TrendingUp } from 'lucide-react';
+import { Bell, ShieldAlert, AlertTriangle, CheckCircle2, Clock, RotateCcw } from 'lucide-react';
 
 export default function StaffPanelPage() {
   const [cases, setCases] = useState([]);
@@ -44,35 +45,39 @@ export default function StaffPanelPage() {
   }, [loadData]);
 
   // Handle case status update or resolution
-  const handleUpdateCaseStatus = async (caseId, status, note) => {
+  const handleUpdateCaseStatus = async (caseId: number, status: string, note?: string) => {
     try {
       await api.updateCase(caseId, { status, note });
       await loadData();
-    } catch (err) {
-      alert(`Error updating case: ${err.message}`);
+      toast.success(`Case #${caseId} updated to ${status}`);
+    } catch (err: any) {
+      toast.error(`Error updating case: ${err.message}`);
     }
   };
 
   // Handle adding timeline note
-  const handleAddTimelineNote = async (caseId, note) => {
+  const handleAddTimelineNote = async (caseId: number, note: string) => {
     try {
       const updated = await api.updateCase(caseId, { note });
       setSelectedCaseForTimeline(updated);
       await loadData();
-    } catch (err) {
-      alert(`Error adding note: ${err.message}`);
+      toast.success('Note added to timeline');
+    } catch (err: any) {
+      toast.error(`Error adding note: ${err.message}`);
     }
   };
 
   // Handle marking notification as read
-  const handleMarkNotifRead = async (notifId) => {
+  const handleMarkNotifRead = async (notifId: number) => {
     try {
       await api.markNotificationRead(notifId);
       setNotifications((prev) =>
         prev.map((n) => (n.id === notifId ? { ...n, is_read: true } : n))
       );
-    } catch (err) {
+      toast.success('Notification marked as read');
+    } catch (err: any) {
       console.error(err);
+      toast.error('Failed to update notification');
     }
   };
 
@@ -199,6 +204,7 @@ export default function StaffPanelPage() {
         {/* Primary Case Management Table */}
         <CaseTable
           cases={cases}
+          loading={loading}
           onSelectCaseTimeline={(c) => {
             setSelectedCaseForTimeline(c);
             setIsTimelineOpen(true);

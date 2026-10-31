@@ -9,68 +9,85 @@ export default function QuickReplyBar({ customer, onSendReply, loading }) {
   if (!customer) return null;
 
   const handleSend = (textToSend?: string) => {
-    const text = textToSend || inputText;
-    if (!text || !text.trim()) return;
-    onSendReply(text.trim());
+    let text = (textToSend || inputText).trim();
+    if (!text) return;
+
+    // First letter capital and rest formatted (e.g. Paid, Promise 2026-11-05, Dispute, Stop, Yes)
+    const upper = text.toUpperCase();
+    if (upper === 'PAID') {
+      text = 'Paid';
+    } else if (upper.startsWith('PROMISE')) {
+      text = 'Promise' + text.substring(7);
+    } else if (upper.startsWith('DISPUTE')) {
+      text = 'Dispute' + text.substring(7);
+    } else if (upper === 'STOP') {
+      text = 'Stop';
+    } else if (upper === 'YES') {
+      text = 'Yes';
+    } else {
+      text = text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    onSendReply(text);
     setInputText('');
   };
 
   return (
-    <div className="bg-white border-t border-slate-200/90 p-3 space-y-2 z-10 shadow-sm">
+    <div className="bg-white border-t border-slate-200/90 p-2.5 sm:p-3 space-y-2 z-10 shadow-sm">
       {/* Simulation Quick Reply Action Chips */}
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mr-1 flex items-center gap-1">
-          <Sparkles className="w-3 h-3 text-amber-500" /> Quick Simulation Chips:
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap sm:flex-wrap">
+        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mr-1 flex items-center gap-1 whitespace-nowrap">
+          Quick Reply Chips:
         </span>
 
-        {/* 1. PAID */}
+        {/* 1. Paid */}
         <button
-          onClick={() => handleSend('PAID')}
+          onClick={() => handleSend('Paid')}
           disabled={loading}
           title="Simulate customer stating payment has been transferred"
-          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-300 rounded-full transition active:scale-95 shadow-2xs"
+          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full transition active:scale-95 shadow-2xs whitespace-nowrap tracking-wide"
         >
-          <CheckCircle className="w-3 h-3 text-emerald-600" /> PAID
+          <CheckCircle className="w-3 h-3 text-emerald-600" /> Paid
         </button>
 
-        {/* 2. PROMISE */}
+        {/* 2. Promise */}
         <button
-          onClick={() => handleSend('PROMISE 2026-11-05')}
+          onClick={() => handleSend('Promise 2026-11-05')}
           disabled={loading}
           title="Simulate customer promising payment on 2026-11-05 (Pauses follow-ups until date)"
-          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-300 rounded-full transition active:scale-95 shadow-2xs"
+          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-full transition active:scale-95 shadow-2xs whitespace-nowrap tracking-wide"
         >
-          <Calendar className="w-3 h-3 text-blue-600" /> PROMISE 2026-11-05
+          <Calendar className="w-3 h-3 text-blue-600" /> Promise 2026-11-05
         </button>
 
-        {/* 3. DISPUTE */}
+        {/* 3. Dispute */}
         <button
-          onClick={() => handleSend('DISPUTE Damaged shipment in batch')}
+          onClick={() => handleSend('Dispute Damaged shipment in batch')}
           disabled={loading}
           title="Simulate customer disputing the order (Halts outreach & opens sales rep case)"
-          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-300 rounded-full transition active:scale-95 shadow-2xs"
+          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-full transition active:scale-95 shadow-2xs whitespace-nowrap tracking-wide"
         >
-          <AlertTriangle className="w-3 h-3 text-amber-600" /> DISPUTE
+          <AlertTriangle className="w-3 h-3 text-amber-600" /> Dispute
         </button>
 
-        {/* 4. STOP */}
+        {/* 4. Stop */}
         <button
-          onClick={() => handleSend('STOP')}
+          onClick={() => handleSend('Stop')}
           disabled={loading}
           title="Simulate WhatsApp opt-out (Zero subsequent messages + sales rep alert)"
-          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-300 rounded-full transition active:scale-95 shadow-2xs"
+          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 rounded-full transition active:scale-95 shadow-2xs whitespace-nowrap tracking-wide"
         >
-          <Ban className="w-3 h-3 text-rose-600" /> STOP (Opt-Out)
+          <Ban className="w-3 h-3 text-rose-600" /> Stop (Opt-Out)
         </button>
 
-        {/* 5. YES */}
+        {/* 5. Yes */}
         <button
-          onClick={() => handleSend('YES')}
+          onClick={() => handleSend('Yes')}
           disabled={loading}
           title="Simulate approving predictive restock reorder draft"
-          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-300 rounded-full transition active:scale-95 shadow-2xs"
+          className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-300 rounded-full transition active:scale-95 shadow-2xs whitespace-nowrap tracking-wide"
         >
-          <ThumbsUp className="w-3 h-3 text-purple-600" /> YES (Reorder)
+          <ThumbsUp className="w-3 h-3 text-purple-600" /> Yes (Reorder)
         </button>
       </div>
 

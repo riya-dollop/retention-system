@@ -54,9 +54,9 @@ export default function ClockController({
             <Clock className="w-4 h-4 text-emerald-400" />
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1.5">
+            <div className="text-[10px] tracking-wider text-slate-400 font-semibold flex items-center gap-1.5">
               <span>Simulated Clock</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+             
             </div>
             <div className="text-lg font-bold font-mono text-emerald-300 tracking-tight">
               {currentDate || 'Loading...'}
@@ -108,18 +108,7 @@ export default function ClockController({
             <span className="text-[10px] bg-rose-700/80 px-1 rounded font-normal hidden sm:inline">GM Notice</span>
           </button>
 
-          {/* Scenario Helper Toggle */}
-          <button
-            onClick={() => setShowScenarioHelp(!showScenarioHelp)}
-            className={`p-1.5 text-xs font-semibold rounded-lg border transition ${
-              showScenarioHelp
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-slate-800 text-slate-400 hover:text-white border-slate-700'
-            }`}
-            title="Show 6 Demo Scenarios Quick Guide"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </button>
+          
 
           {/* Reset button */}
           <button
@@ -134,49 +123,9 @@ export default function ClockController({
         </div>
       </div>
 
-      {/* Scenario Quick Guide Dropdown */}
-      {showScenarioHelp && (
-        <div className="mt-3 p-3 bg-slate-950/90 border border-slate-700 rounded-xl animate-fadeIn">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> 6 Mandatory Reviewer Scenarios Guide
-            </span>
-            <button
-              onClick={() => setShowScenarioHelp(false)}
-              className="text-[11px] text-slate-400 hover:text-white"
-            >
-              Close ✕
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-            {scenarios.map((s) => (
-              <div
-                key={s.id}
-                className="p-2 bg-slate-900 border border-slate-800 rounded-lg text-[11px] hover:border-slate-700 transition"
-              >
-                <div className="font-semibold text-emerald-400 mb-0.5">{s.title}</div>
-                <div className="text-slate-400 leading-snug">{s.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+    
 
-      {/* Live notification pill */}
-      {auditBanner && (
-        <div className="mt-2 text-xs bg-emerald-950/90 border border-emerald-500/40 text-emerald-200 px-3 py-1.5 rounded-lg flex items-center justify-between animate-fadeIn shadow-sm">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-            <span>{auditBanner}</span>
-          </div>
-          <button
-            onClick={() => setAuditBanner(null)}
-            className="text-emerald-400 hover:text-white font-bold ml-4"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+     
     </div>
   );
 }
