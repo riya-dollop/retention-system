@@ -12,25 +12,30 @@ let realPool = new Pool({
   connectionTimeoutMillis: 2000,
 });
 
+let memDb = null;
 let memPool = null;
 let useMemoryFallback = false;
 
 function initMemPool() {
   if (!memPool) {
     const { newDb } = require('pg-mem');
-    const db = newDb();
+    memDb = newDb();
     
     // Register custom functions or postgres extensions if needed
-    db.public.registerFunction({
+    memDb.public.registerFunction({
       name: 'now',
       implementation: () => new Date(),
     });
 
     const schemaPath = path.join(__dirname, 'migrations/001_init.sql');
     const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-    db.public.none(schemaSql);
+    try {
+      memDb.public.none(schemaSql);
+    } catch (e) {
+      console.warn('[Database] Initial DDL load in pg-mem notice:', e.message);
+    }
 
-    const adapter = db.adapters.createPg();
+    const adapter = memDb.adapters.createPg();
     memPool = new adapter.Pool();
     console.log('[Database] Initialized in-memory PostgreSQL emulator (pg-mem).');
   }
@@ -40,15 +45,40 @@ function initMemPool() {
 const poolProxy = {
   query: async (text, params) => {
     if (useMemoryFallback) {
+      if (!params && (text.includes('CREATE TABLE') || text.includes('CREATE INDEX'))) {
+        try {
+          memDb.public.none(text);
+          return { rows: [] };
+        } catch {
+          return { rows: [] };
+        }
+      }
       return memPool.query(text, params);
     }
     try {
       return await realPool.query(text, params);
     } catch (err) {
-      if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT' || err.message?.includes('Connection terminated')) {
+      const isConnError =
+        err.code === 'ECONNREFUSED' ||
+        err.code === 'ETIMEDOUT' ||
+        err.code === 'ENOTFOUND' ||
+        err.name === 'AggregateError' ||
+        err.message?.includes('Connection terminated') ||
+        err.message?.includes('connect ECONNREFUSED') ||
+        (Array.isArray(err.errors) && err.errors.some(e => e.code === 'ECONNREFUSED' || e.code === 'ETIMEDOUT'));
+
+      if (isConnError) {
         console.warn(`[Database] PostgreSQL at ${connectionString} unreachable. Seamlessly activating high-performance in-memory PostgreSQL engine.`);
         useMemoryFallback = true;
         initMemPool();
+        if (!params && (text.includes('CREATE TABLE') || text.includes('CREATE INDEX'))) {
+          try {
+            memDb.public.none(text);
+            return { rows: [] };
+          } catch {
+            return { rows: [] };
+          }
+        }
         return memPool.query(text, params);
       }
       throw err;

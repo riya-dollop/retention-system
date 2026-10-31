@@ -82,7 +82,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-if (process.env.NODE_ENV !== 'test') {
+if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`=======================================================`);
     console.log(`Backend API Server running at: http://localhost:${PORT}`);

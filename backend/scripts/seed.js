@@ -176,3 +176,4 @@ if (require.main === module) {
 }
 
 module.exports = { seedDatabase, INITIAL_CLOCK_DATE };
+

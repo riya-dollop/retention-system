@@ -1,7 +1,7 @@
 -- System Simulated Clock
 CREATE TABLE IF NOT EXISTS system_clock (
     id SERIAL PRIMARY KEY,
-    simulated_date DATE NOT NULL DEFAULT '2026-10-01',
+    simulated_date DATE NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
