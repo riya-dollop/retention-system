@@ -81,3 +81,4 @@ export const api = {
   getOffers: (): Promise<any[]> => fetchJson('/offers'),
   getReorderRecommendations: (): Promise<any[]> => fetchJson('/reorder/recommendations'),
 };
+

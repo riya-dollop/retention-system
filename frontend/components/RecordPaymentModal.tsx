@@ -5,8 +5,8 @@ import { X, CreditCard, CheckCircle2, Sparkles, Percent } from 'lucide-react';
 
 export default function RecordPaymentModal({ customer, isOpen, onClose, onSubmitPayment, loading }) {
   const [selectedInvoiceNo, setSelectedInvoiceNo] = useState('');
-  const [amount, setAmount] = useState('');
-  const [message, setMessage] = useState(null);
+  const [amount, setAmount] = useState<string | number>('');
+  const [message, setMessage] = useState<string | null>(null);
 
   if (!isOpen || !customer) return null;
 

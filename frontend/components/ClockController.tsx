@@ -3,7 +3,19 @@
 import React, { useState } from 'react';
 import { Calendar, FastForward, RotateCcw, Clock, Sparkles, HelpCircle, Check, ArrowRight } from 'lucide-react';
 
-export default function ClockController({ currentDate, onAdvance, onReset, loading, onSelectScenario }) {
+export default function ClockController({
+  currentDate,
+  onAdvance,
+  onReset,
+  loading,
+  onSelectScenario,
+}: {
+  currentDate: string;
+  onAdvance: (days: number) => Promise<any>;
+  onReset: () => void;
+  loading: boolean;
+  onSelectScenario?: (id: number) => void;
+}) {
   const [customDays, setCustomDays] = useState(1);
   const [auditBanner, setAuditBanner] = useState(null);
   const [showScenarioHelp, setShowScenarioHelp] = useState(false);

@@ -8,7 +8,7 @@ export default function QuickReplyBar({ customer, onSendReply, loading }) {
 
   if (!customer) return null;
 
-  const handleSend = (textToSend) => {
+  const handleSend = (textToSend?: string) => {
     const text = textToSend || inputText;
     if (!text || !text.trim()) return;
     onSendReply(text.trim());

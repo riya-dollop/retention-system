@@ -84,3 +84,4 @@ export interface NotificationEntity {
   simulated_date: string;
   created_at?: Date | string;
 }
+

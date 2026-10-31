@@ -194,7 +194,7 @@ export default function CaseTable({ cases, onSelectCaseTimeline, onUpdateCaseSta
           <tbody className="divide-y divide-slate-100">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan="8" className="py-12 text-center text-slate-400 font-medium">
+                <td colSpan={8} className="py-12 text-center text-slate-400 font-medium">
                   No cases found matching the criteria.
                 </td>
               </tr>
